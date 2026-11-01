@@ -1,6 +1,9 @@
 # pelican-bmx
 
-![a pelican, on a bike, doing crimes](data/screenshot.jpg)
+
+https://github.com/user-attachments/assets/08619774-4f4d-4314-9f09-22df0bd66ee2
+
+
 
 For years the benchmark was "draw an SVG of a pelican riding a bicycle". The models drew a bird-shaped blob near two circles and everyone clapped. This repo is what happens when you take the benchmark way too literally: the pelican rides a BMX now, does tailwhips, grinds 30 m rails, gets Dragon Ball auras when the special bar fills, and comes apart into six pieces when it leaves the park.
 
