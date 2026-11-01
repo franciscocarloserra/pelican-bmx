@@ -341,6 +341,7 @@ const CSS = `
 #loading .hxLogoW>.s>i{position:absolute;top:-20%;bottom:-20%;left:0;width:35%;background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.95) 50%,transparent 80%);transform:translateX(-150%) skewX(-15deg);animation:hxSweep 2.2s ease-in-out infinite}
 @keyframes hxSweep{0%{transform:translateX(-150%) skewX(-15deg)}60%,100%{transform:translateX(400%) skewX(-15deg)}}
 #loading::after{content:'';position:absolute;inset:0;z-index:-1;background:var(--grit) 0 0/140px 140px,radial-gradient(rgba(0,0,0,.35) 30%,transparent 36%) 0 0/5px 5px,radial-gradient(ellipse at 50% 45%,transparent 35%,rgba(0,0,0,.85) 100%);--grit:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.6 0 0 0 -.7'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+#loading.ready{cursor:pointer}#loading.ready>div{animation:hxGlow .6s ease-in-out infinite alternate}
 #loading>div{font:900 italic 22px HudDisplay,Impact,sans-serif;letter-spacing:.08em;color:#fff;-webkit-text-stroke:1px #000;text-transform:uppercase}
 `;
 const JAGS = [];
@@ -356,7 +357,7 @@ for (let i = 0; i < 16; i++) JAGS.push(jag());
 const pick = a => a[Math.random() * a.length | 0];
 (function buildLoading() {   // loading screen: messy edge-to-edge graffiti collage + chrome logo with a moving specular sweep
   const ld = document.getElementById('loading'); if (!ld || ld.classList.contains('done')) return;
-  const g = document.createElement('div'); g.className = 'hxGraf';
+  const g = document.createElement('div'); g.className = 'hxGraf'; g.hidden = true;   // shown once CSS is injected (else unstyled imgs cover the logo)
   const W = innerWidth, H = innerHeight, cols = 6, rows = 5, srcs = ['data/graffiti1.webp', 'data/graffiti2.webp', 'data/graffiti3.webp'];
   for (let k = 0; k < 2; k++) for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {   // two jittered grid passes = full overlap
     const im = document.createElement('img'); im.src = srcs[(r * cols + c + k) % 3]; im.alt = '';
@@ -501,7 +502,7 @@ function E() {
   }
   e.floats = []; for (let i = 0; i < FLOATERS; i++) { const f = tx(); f.classList.add('hxF'); e.root.append(f); e.floats.push(f); }
   e.mflash = document.createElement('b'); e.meter.append(e.mflash);
-  const st = document.createElement('style'); st.textContent = CSS + (FX.hideStatusBar ? '#bar{display:none!important}' : ''); document.head.append(st);
+  const st = document.createElement('style'); st.textContent = CSS + (FX.hideStatusBar ? '#bar{display:none!important}' : ''); document.head.append(st); document.querySelector('#loading .hxGraf')?.removeAttribute('hidden');
   e.callLine = new Line(e.callW, 10, 48); e.bigLine = new Line(e.bigW, 24, 32);
   e.stamp = chip(); e.stamp.classList.add('hxStamp'); e.grade.before(e.stamp); e.stamp.append(e.grade);
   buildTL();

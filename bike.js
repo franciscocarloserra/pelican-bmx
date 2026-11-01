@@ -138,7 +138,7 @@ export function buildBike() {
   mesh(mirror(sx => [boxG(0.08, 0.018, 0.09, V(sx * PX, sx * CRANK, 0))]), M.rubber, crank);
 
   rider = new THREE.Group(); g.add(rider);   // rider.position.y = crouch (IK keeps hands/feet on the bike)
-  const loaded = () => document.getElementById('loading')?.classList.add('done');
+  const loaded = () => { const l = document.getElementById('loading'); if (!l) return; l.classList.add('ready'); const t = l.querySelector(':scope > div'); if (t) t.textContent = 'click to send it'; };
   new GLTFLoader().load(RIDER_GLB, gl => {
     loaded();
     const o = gl.scene; o.scale.setScalar(RIDER_SCALE); o.rotation.y = Math.PI;

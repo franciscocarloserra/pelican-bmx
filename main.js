@@ -93,6 +93,7 @@ let mouseDX = 0, camYaw = 0, camPitch = CAM_PITCH0, camSnap = true;
 addEventListener('keydown', e => { keys.add(e.code); if (e.code === 'KeyR') { respawn(true); camSnap = true; } if (e.code === CAM_RESET) camSnap = true; if (e.code === 'Space' || e.code.startsWith('Arrow')) e.preventDefault(); });
 addEventListener('keyup', e => keys.delete(e.code));
 renderer.domElement.onclick = () => { renderer.domElement.requestPointerLock(); const m = $('music'); m.volume = MUSIC_VOL; if (m.paused) m.play().catch(e => log('error', {msg: 'music: ' + e.message})); };
+$('loading').onclick = e => { const l = e.currentTarget; if (!l.classList.contains('ready')) return; l.classList.add('done'); renderer.domElement.onclick(); };   // loading stays until user clicks
 document.addEventListener('pointerlockchange', () => { const on = !!document.pointerLockElement; $('panel').classList.toggle('hide', on); $('hint').classList.toggle('hide', on); if (!on) keys.clear(); });
 addEventListener('mousemove', e => { if (!document.pointerLockElement) return;
   idle = 0; mouseDX += e.movementX * CAM_MOUSE * P.sens; camPitch = Math.max(CAM_PITCH_MIN, Math.min(CAM_PITCH_MAX, camPitch + e.movementY * CAM_MOUSE * P.sens)); });
