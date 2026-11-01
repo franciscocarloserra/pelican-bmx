@@ -1,0 +1,128 @@
+<!doctype html><html><head><meta charset="utf-8"><title>🐦🚲💥 PELICAN BMX 🔥🪶 SEND IT 🤘</title>
+<style>
+body{margin:0;background:#111;color:#ccc;font:12px system-ui;overflow:hidden}
+#panel{display:none!important;position:fixed;top:10px;right:10px;width:270px;max-height:calc(100vh - 60px);overflow:auto;background:#181818ee;padding:8px;border-radius:6px}
+.hide{display:none!important}
+.row{display:grid;grid-template-columns:92px 1fr 40px;gap:6px;align-items:center;margin:2px 0}
+.row label{cursor:help}.row input{width:100%}
+h3{margin:8px 0 2px;font-size:10px;color:#777;text-transform:uppercase}
+#bar{position:fixed;bottom:0;left:0;right:0;background:#0b0b0b;padding:4px 8px;display:flex;gap:14px;align-items:center}
+#hint{position:fixed;left:0;right:290px;top:45%;text-align:center;pointer-events:none;font-size:16px;color:#fffa}
+#hud{position:fixed;top:40px;left:0;right:0;text-align:center;pointer-events:none;color:#fff;text-shadow:0 2px 6px #000a}
+#trick{font:bold 40px system-ui;text-transform:uppercase}#trickSub{font-size:20px}#combo{font:bold 24px system-ui;color:#ffd166;margin-top:6px}
+#chain{font-size:14px;color:#ffd166cc;margin-top:2px}
+#bal{display:none;position:relative;width:180px;height:8px;margin:8px auto 0;background:#0008;border:1px solid #fff6;border-radius:4px}
+#bal i{position:absolute;top:-3px;width:4px;height:14px;margin-left:-2px;background:#fff;border-radius:2px}
+#bal:after{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:#fff8}
+#legend{position:fixed;bottom:30px;left:8px;background:#181818ee;padding:8px;border-radius:6px;display:none;white-space:pre;line-height:1.5}
+#loading{position:fixed;inset:0;z-index:9;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .5s}
+#loading img{width:min(800px,80vw)}#loading.done{opacity:0;pointer-events:none}
+button{background:#222;color:#ccc;border:1px solid #333;border-radius:4px;padding:2px 8px;cursor:pointer}
+/* ---- HUD text (hud.js): black outline layer + textured fill layer, no shadows ---- */
+#hud{top:auto;bottom:34%;text-shadow:none}#trick,#trickSub,#combo,#chain{display:none}
+#bal{width:200px;height:10px;background:#1a1a1a;border:3px solid #000;border-radius:6px}#bal i{top:-5px;height:20px;width:6px;margin-left:-3px;border:2px solid #000;box-sizing:border-box}
+@font-face{font-family:HudDisplay;src:url(data/hud-font.woff2) format('woff2');font-style:italic;font-weight:900;font-display:swap}
+#hx [hidden]{display:none!important}
+#hx{position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden;font-family:HudDisplay,Impact,'Arial Black',system-ui,sans-serif;font-weight:900;font-style:italic;
+  --grit:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 -1.15'/%3E%3C/filter%3E%3Crect width='96' height='96' filter='url(%23n)'/%3E%3C/svg%3E")}
+#hx .tx{position:relative;display:inline-block;line-height:1.08;white-space:nowrap;letter-spacing:.02em;text-transform:uppercase;--c:#fff;--c2:#8d9bb0;opacity:0;will-change:transform,opacity}
+#hx .tx>b{display:block;font-weight:inherit;padding:.03em .14em}
+#hx .tx>b:first-child{color:#000;-webkit-text-stroke:.24em #000}
+#hx .tx>b:last-child{position:absolute;inset:0;color:transparent;-webkit-background-clip:text;background-clip:text;
+  background-image:var(--grit),repeating-linear-gradient(115deg,transparent 0 6px,rgba(0,0,0,.16) 6px 7px),radial-gradient(rgba(0,0,0,.28) 30%,transparent 36%),linear-gradient(176deg,#fff 0 20%,var(--c) 50%,var(--c2) 100%);
+  background-size:96px 96px,auto,5px 5px,100% 100%}
+#hxSpeed{display:none;position:absolute;inset:-25%;opacity:0;will-change:transform,opacity;animation:hxSl .2s steps(4) infinite;
+  background:repeating-conic-gradient(transparent 0 2.6deg,rgba(255,255,255,.75) 2.6deg 3deg,transparent 3deg 5.3deg,rgba(255,255,255,.4) 5.3deg 5.5deg,transparent 5.5deg 9deg);
+  -webkit-mask:radial-gradient(closest-side,transparent 48%,#000 100%);mask:radial-gradient(closest-side,transparent 48%,#000 100%)}
+#hxSpeed.off{visibility:hidden;animation-play-state:paused}
+@keyframes hxSl{from{transform:rotate(0)}to{transform:rotate(9deg) scale(1.05)}}
+#hxFlash{position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% 30%,#fff 0,rgba(255,255,255,.35) 40%,transparent 70%)}
+#hxScore{position:absolute;left:18px;top:12px;display:flex;flex-direction:column;align-items:flex-start}
+#hxScore .tx,#hxRow .tx{opacity:1}
+#hxScoreN{font-size:38px;contain:layout paint}#hxBest{font-size:14px;margin-top:2px}
+#hxCallW,#hxBigW{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:2px}
+#hxCallW{top:9%}#hxBigW{top:27%}
+#hxCall{font-size:clamp(30px,5.2vw,74px)}#hxPts{font-size:clamp(20px,2.7vw,38px)}#hxGrade{font-size:clamp(18px,2.3vw,32px);margin-top:4px}
+#hxBig{font-size:clamp(44px,8.2vw,124px)}#hxBigSub{font-size:clamp(16px,2vw,28px)}
+#hxCombo{position:absolute;left:0;right:0;bottom:52px;display:flex;flex-direction:column;align-items:center;gap:3px;opacity:0;transition:opacity .2s}
+#hxCombo.on{opacity:1}
+#hxList{display:flex;flex-direction:column;align-items:center;font-size:17px}
+#hxCombo:not(.multi) #hxList{display:none}
+#hxList .tx{opacity:.3}#hxList .tx:nth-last-child(1){opacity:1}#hxList .tx:nth-last-child(2){opacity:.75}#hxList .tx:nth-last-child(3){opacity:.55}#hxList .tx:nth-last-child(4){opacity:.4}
+#hxRow{display:flex;align-items:baseline;gap:8px}
+#hxTotal{font-size:26px;contain:layout paint}#hxMult{font-size:46px}
+#hxMeter{width:240px;height:8px;background:#1a1a1a;border:3px solid #000;border-radius:6px;overflow:hidden}
+#hxMeter.hidden{visibility:hidden}
+#hxMeter>i{display:block;height:100%;background:linear-gradient(90deg,#ff7a00,#ffe14d);transform-origin:0 50%;will-change:transform}
+#hxMeter.low>i{background:#ff3b30;animation:hxBlink .25s steps(2) infinite}
+@keyframes hxBlink{50%{opacity:.35}}
+#hxRed{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at 50% 50%,rgba(255,40,20,.55) 0,rgba(200,0,0,.85) 55%,#4a0000 100%)}
+.hxB{position:absolute;left:0;top:0;width:160px;height:150px;margin:-75px 0 0 -80px;opacity:0;will-change:transform,opacity;
+  background:radial-gradient(circle at 34% 30%,rgba(255,140,130,.55) 0 7%,transparent 13%),radial-gradient(circle at 70% 75%,#3a0000 0 18%,transparent 40%),radial-gradient(closest-side,#9a0303 0 70%,#6a0000 92%,#400000 100%)}
+.hxB>i{position:absolute;top:80%;width:14px;height:150px;margin-left:-7px;border-radius:0 0 7px 7px;transform-origin:50% 0;transform:scaleY(0);background:linear-gradient(#8a0202,#5a0000)}
+#hxMeter{position:relative}#hxMeter>b{position:absolute;inset:0;background:#fff;opacity:0}
+#hx .hxF{position:absolute;left:0;top:0;font-size:20px}
+#hxGl{position:absolute;inset:0;overflow:hidden}
+.hxGlS{position:absolute;inset:-4px 0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.4) 0 1px,transparent 1px 3px);will-change:transform}
+.hxGlN{position:absolute;inset:0;image-rendering:pixelated;mix-blend-mode:difference;background-repeat:repeat}
+.hxGlB{position:absolute;left:-5%;top:0;width:110%;height:10px;transform-origin:0 0;will-change:transform}
+.hxGlB:nth-child(3n){backdrop-filter:invert(1);-webkit-backdrop-filter:invert(1)}
+.hxGlB:nth-child(3n+1){backdrop-filter:hue-rotate(140deg) saturate(4);-webkit-backdrop-filter:hue-rotate(140deg) saturate(4)}
+.hxGlB:nth-child(3n+2){background:#0ff;mix-blend-mode:difference}
+.hxGlT{position:absolute;left:0;right:0;top:34%;display:grid;justify-items:center;font-size:clamp(48px,9vw,140px)}
+#hx .hxGlT>.tx{grid-area:1/1;opacity:1}#hx .hxGlT>.tx.ch{mix-blend-mode:screen;opacity:.85}
+.hxP{position:absolute;left:0;top:0;width:12px;height:12px;margin:-6px 0 0 -6px;background:#ffe14d;border:2px solid #000;opacity:0;will-change:transform,opacity}
+.hxS{position:absolute;left:0;top:0;width:24px;height:24px;margin:-12px 0 0 -12px;background:#fff6a8;opacity:0;will-change:transform,opacity;
+  clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%)}
+</style></head><body>
+<div id="loading"><img src="data/logo.webp" alt=""><div>loading…</div></div>
+<audio id="music" src="data/soundtrack.mp3" loop preload="auto"></audio>
+<div id="hint">click to play</div>
+<div id="hud"><div id="trick"></div><div id="trickSub"></div><div id="combo"></div><div id="chain"></div><div id="bal"><i id="balMark"></i></div></div>
+<div id="hx"><div id="hxSpeed" class="off"></div><div id="hxFlash"></div><!-- HUD rendered by hud.js; legacy #trick/#combo text above stays as hidden data -->
+<div id="hxScore"><span class="tx" id="hxScoreN"><b></b><b></b></span><span class="tx" id="hxBest"><b></b><b></b></span></div>
+<div id="hxCallW"><span class="tx" id="hxCall"><b></b><b></b></span><span class="tx" id="hxPts"><b></b><b></b></span><span class="tx" id="hxGrade"><b></b><b></b></span></div>
+<div id="hxBigW"><span class="tx" id="hxBig"><b></b><b></b></span><span class="tx" id="hxBigSub"><b></b><b></b></span></div>
+<div id="hxCombo"><div id="hxList"></div><div id="hxRow"><span class="tx" id="hxTotal"><b></b><b></b></span><span class="tx" id="hxMult"><b></b><b></b></span></div><div id="hxMeter" class="hidden"><i></i></div></div>
+</div>
+<div id="panel"></div>
+<div id="legend">click   grab mouse (Esc releases and shows params)
+mouse   orbit camera (recenters when idle) · C reset camera
+W       pedal · S brake · A/D steer
+Space   hold = charge, release = bunny hop
+Shift   stand up (pedal harder)
+air     A/D spin · S backflip · W frontflip
+        Q (bike) + none tailwhip · W barspin · S turndown · A/D x-up
+        E (body) + none superman · W no-hander · S tabletop · A/D can-can
+        Q/E held = keep spinning / longer hold scores more; finish or let go
+        before landing (small hops just drop it)
+F       hold = manual · W/S keep the meter centred
+grind   hop/land along a rail, ledge or coping edge to lock on
+        A/D balance · E+dir switch: none double peg, A/D toward
+        edge feeble / away smith, S icepick, W crooked
+        Space hop off (or roll off the end)
+special meter full (fill it with tricks): air Q+E together
+        + none/W tsunami · S cliffhanger · A/D tornado
+R       back to start
+combo   air tricks, grinds and manuals chain; landing without
+        a manual banks it, a bail loses it
+double click a label = default · hover = description</div>
+<div id="bar"><span id="fps">-</span><span id="spd">-</span><span id="score">-</span><span id="msg"></span>
+<span style="flex:1"></span><button id="legBtn">controls</button></div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script>
+const SLOW_MS = 50, THROTTLE_MS = 2000, _last = {};
+function log(type, d = {}) {
+  const k = type + (d.msg || ''), now = performance.now();
+  if (!['pref', 'trick', 'crash', 'record'].includes(type) && now - (_last[k] || -1e9) < THROTTLE_MS) return;
+  _last[k] = now;
+  fetch('/log', {method: 'POST', body: JSON.stringify({type, ...d}), keepalive: true}).catch(() => {});
+}
+addEventListener('error', e => log('error', {msg: e.message, src: e.filename + ':' + e.lineno, stack: e.error?.stack?.slice(0, 800)}));
+setTimeout(() => { if (!window.booted) log('boot-fail', {msg: 'main.js did not start within 5 s'}); }, 5000);
+addEventListener('unhandledrejection', e => log('rejection', {msg: String(e.reason), stack: e.reason?.stack?.slice(0, 800)}));
+for (const lvl of ['error', 'warn']) { const o = console[lvl]; console[lvl] = (...a) => { log(lvl, {msg: a.map(String).join(' ').slice(0, 500)}); o(...a); }; }
+try { new PerformanceObserver(l => l.getEntries().forEach(e => log('longtask', {ms: Math.round(e.duration)}))).observe({type: 'longtask', buffered: true}); } catch {}
+</script>
+<script type="module" src="main.js"></script>
+</body></html>
